@@ -1,0 +1,32 @@
+---
+title: "Week5"
+author: "Alfazkhan"
+date: "2024-10-11"
+output: html_document
+---
+
+```{r}
+# Load required libraries
+library(readxl)
+library(tidyverse)
+library(lubridate)
+library(tsibble)
+
+# Load the Excel file
+data <- read_excel("C:/Users/Alfaz Khan/OneDrive/Desktop/RUTGERS/Business Forecasting/Week 3/Job Openings and Labor Turnover Survey.xlsx", sheet = "BLS Data Series")
+
+# Reshape the data into long format for time series creation
+data_long <- data %>%
+  pivot_longer(cols = -Year, names_to = "Month", values_to = "Value") %>%
+  mutate(Date = ymd(paste(Year, Month, "01", sep = "-"))) %>%
+  select(Date, Value)
+
+# Create time series object with monthly frequency
+time_series_data <- ts(data_long$Value, start = c(year(min(data_long$Date)), month(min(data_long$Date))), frequency = 12)
+
+# Perform decomposition on the time series data
+decomposed_ts <- decompose(time_series_data)
+
+# Plot the decomposition
+plot(decomposed_ts)
+```
